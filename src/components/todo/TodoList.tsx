@@ -3,7 +3,7 @@ import { TodoItem } from "./TodoItem"
 
 export const TodoList = () => {
   return (
-    <div className="border border-border p-5 rounded-2xl w-6/10">
+    <div className="border border-border p-5 rounded-2xl max-w-96 w-full sm:max-w-full">
       <div className="w-full max-w-96 m-auto mb-5">
         <FilterBar />
       </div>

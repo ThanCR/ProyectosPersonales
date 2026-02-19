@@ -5,7 +5,7 @@ import { Textarea } from "../ui/textarea"
 
 export const TodoAddForm = () => {
   return (
-    <form className="flex flex-col gap-5 h-full border border-border self-baseline p-5 rounded-2xl w-96">
+    <form className="flex flex-col gap-5 h-full border border-border self-center sm:self-baseline p-5 rounded-2xl w-full max-w-96">
       <div className="flex flex-col gap-2">
         <Label htmlFor="title">Title</Label>
         <Input
@@ -24,10 +24,10 @@ export const TodoAddForm = () => {
       </div>
       <div className="flex flex-col gap-2">
         <Button type="submit" className="w-full">
-          Mask as completed
+          Create task
         </Button>
         <Button variant="outline" className="w-full">
-          Remove
+          Reset fields
         </Button>
       </div>
     </form>
