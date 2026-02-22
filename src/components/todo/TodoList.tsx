@@ -5,10 +5,10 @@ import { TodoItem } from "./TodoItem"
 interface Props{
   todos: Todo[],
   removeTodo: (id: number) => void,
-  completeTodo: (id: number) => void,
+  setCompleted: (id: number) => void,
 }
 
-export const TodoList = ({todos, completeTodo, removeTodo}:Props) => {
+export const TodoList = ({todos, setCompleted, removeTodo}:Props) => {
   return (
     <div className="border border-border p-5 rounded-2xl max-w-96 w-full sm:max-w-full">
       <div className="w-full max-w-96 m-auto mb-5">
@@ -18,8 +18,8 @@ export const TodoList = ({todos, completeTodo, removeTodo}:Props) => {
         {todos.map((todo) => (
           <TodoItem
             todo={todo}
-            key={todo.title}
-            completeTodo={completeTodo}
+            key={todo.id}
+            setCompleted={setCompleted}
             removeTodo={removeTodo} />
         ))}
       </div>

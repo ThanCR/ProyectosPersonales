@@ -6,8 +6,8 @@ export const useTodos = () => {
 
   const [todos, setTodos] = useState<Todo[]>(data)
 
-  const completeTodo = (id: number) => {
-    setTodos(prev => prev.map(todo => todo.id === id ? { ...todo, completed: true } : todo))
+  const setCompleted = (id: number) => {
+    setTodos(prev => prev.map(todo => todo.id === id ? { ...todo, completed:  !(todo.completed)} : todo))
   }
 
   const removeTodo = (id: number) => {
@@ -15,14 +15,12 @@ export const useTodos = () => {
   }
 
   const addTodo = (todo: Todo) => {
-    setTodos([...todos, todo])
+    setTodos(prev => [...prev, todo])
   }
 
   return {
     todos,
-
-
-    completeTodo,
+    setCompleted,
     removeTodo,
     addTodo
   }

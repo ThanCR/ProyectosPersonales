@@ -11,16 +11,16 @@ import {
 } from "@/components/ui/popover"
 import { format } from "date-fns"
 import { ChevronDownIcon } from "lucide-react"
+import {type ControllerRenderProps } from "react-hook-form"
+import type { FormInputs } from "./TodoAddForm"
 
-
-interface Props{
-
+interface Props {
+  field: ControllerRenderProps<FormInputs, "dateTime">;
 }
 
-export const DatePicker= () => {
-  const [open, setOpen] = React.useState(false)
-  const [date, setDate] = React.useState<Date | undefined>(undefined)
+export const DatePicker = ({ field: dateTime }: Props) => {
 
+  const [open, setOpen] = React.useState(false)
   return (
     <FieldGroup className="flex-row">
       <Field>
@@ -32,18 +32,21 @@ export const DatePicker= () => {
               id="date-picker-optional"
               className="w-32 justify-between font-normal"
             >
-              {date ? format(date, "PPP") : "Select date"}
+              {dateTime.value ? format(dateTime.value.date, "PPP") : "Select date"}
               <ChevronDownIcon />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto overflow-hidden p-0" align="start">
             <Calendar
               mode="single"
-              selected={date}
+              selected={dateTime.value.date}
               captionLayout="dropdown"
-              defaultMonth={date}
+              defaultMonth={dateTime.value.date}
               onSelect={(date) => {
-                setDate(date)
+                dateTime.onChange({
+                  ...dateTime.value,
+                  date
+                })
                 setOpen(false)
               }}
             />
@@ -56,10 +59,17 @@ export const DatePicker= () => {
           type="time"
           id="time-picker-optional"
           step="1"
-          defaultValue="10:30:00"
+          defaultValue={new Date().toTimeString().slice(0,8)}
+          onChange={(e) => {
+            dateTime.onChange({
+              ...dateTime.value,
+              time: e.target.value
+            })
+          }}
           className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
         />
       </Field>
     </FieldGroup>
+
   )
 }

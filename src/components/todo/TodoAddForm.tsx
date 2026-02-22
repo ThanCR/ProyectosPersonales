@@ -4,45 +4,105 @@ import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { Textarea } from "../ui/textarea"
 import { DatePicker } from "./DatePicker"
+import { useForm, type SubmitHandler } from "react-hook-form"
+import { Form, FormField } from "../ui/form"
+import { buildFromDateTime } from "./helpers/buildFromDateTime"
+import { cn } from "@/lib/utils"
 
-interface Props{
+interface Props {
   addTodo: (todo: Todo) => void
 }
 
-export const TodoAddForm = ({addTodo}: Props) => {
+export interface FormInputs { 
+  title: string | undefined;
+  description: string | undefined;
+  dateTime: {
+    date: Date ;
+    time: string;
+  }
+ }
 
+export const TodoAddForm = ({ addTodo }: Props) => {
 
+  const form = useForm<FormInputs>({
+    defaultValues: {
+      title: '',
+      description: '',
+      dateTime:{
+        date: new Date(),
+        time: new Date().toTimeString().slice(0,8),
+      }
+    },
+  })
+
+  const {errors} = form.formState
+
+  const onSubmit: SubmitHandler<FormInputs> = (data) => {
+    const {date, time} = data.dateTime
+    if(!date || !time) return
+
+    const deadline: Date = buildFromDateTime(date, time)
+    const {title, description} = form.getValues()
+    const newTodo: Todo = {
+      id: new Date().getTime(),
+      title: title || '',
+      description: description || '',
+      created: new Date().toISOString(),
+      deadline: deadline.toISOString(),
+      completed: false
+    }
+    addTodo(newTodo)
+    form.reset()
+  }
 
   return (
-    <form className="flex flex-col gap-5 h-full border border-border self-center sm:self-baseline p-5 rounded-2xl w-full max-w-96">
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="title">Title</Label>
-        <Input
-          id="title"
-          placeholder="Enter item title"
-          className="bg-secondary border-border"
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          placeholder="Write a brief description..."
-          className="bg-secondary border-border min-h-28 resize-none"
-        />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <DatePicker />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Button type="submit" className="w-full">
-          Create task
-        </Button>
-        <Button variant="outline" className="w-full" onClick={() => {}}>
-          Reset fields
-        </Button>
-      </div>
-    </form>
+    <Form {...form}>
+      <form className="flex flex-col gap-5 h-full border border-border self-center sm:self-baseline p-5 rounded-2xl w-full max-w-96" onSubmit={form.handleSubmit(onSubmit)}>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="title">Title</Label>
+          <Input
+            id="title"
+            placeholder="What are you going to do today?"
+            className={cn("bg-secondary border-border", {
+              'border-red-400': errors.title
+            })}
+            {...form.register("title", {
+              required: true,
+              minLength: 6
+            })}
+          />
+          {errors.title ? <p className="text-xs text-red-500">Title should be 6 characters at least</p> : ''}
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="description">Description</Label>
+          <Textarea
+            id="description"
+            placeholder="Write a brief description..."
+            className={cn("bg-secondary border-border min-h-28 resize-none", {
+              'border-red-400': errors.description
+            })}
+            {...form.register("description", {
+              required: true,
+            })}
+          />
+          {errors.description ? <p className="text-xs text-red-500">Description is required</p> : ''}
+        </div>
+        <div className="flex flex-col gap-2">
+          <FormField
+            name="dateTime"
+            control={form.control}
+            render={({ field }) => (<DatePicker field={field}/>)}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Button type="submit" className="w-full">
+            Create task
+          </Button>
+          <Button variant="outline" className="w-full" onClick={() => { }}>
+            Reset fields
+          </Button>
+        </div>
+      </form>
+    </Form>
   )
 }
