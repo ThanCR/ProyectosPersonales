@@ -9,22 +9,33 @@ import {
 } from "@/components/ui/card"
 import type { Todo } from "@/models/Todo"
 import { formatDateToShow } from "./helpers/formatDeadline"
+import { cn } from "@/lib/utils"
+import { CheckLine, Square, X } from "lucide-react"
 
-interface Props{
+interface Props {
   todo: Todo,
   setCompleted: (id: number) => void,
   removeTodo: (id: number) => void
 }
 
-export const TodoItem = ({todo, setCompleted, removeTodo}: Props) => {
+export const TodoItem = ({ todo, setCompleted, removeTodo }: Props) => {
 
-  const {title,description, remainingTime, created, deadline, completed } = todo
+  const { title, description, remainingTime, created, deadline, completed } = todo
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card
+      className={cn("w-full max-w-sm relative border-3 ", {
+        'border-green-600 text-green-600': completed
+      })}
+
+    >
       <CardHeader className="h-full">
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>
+
+        <X className="text-red-500 size-7 top-4 absolute right-7" onClick={() => {removeTodo(todo.id)}} /> 
+        <CardTitle className="pb-2">{title}</CardTitle>
+        <CardDescription className={cn({
+          'text-green-600': completed
+        })}>
           {description}
         </CardDescription>
       </CardHeader>
@@ -32,15 +43,15 @@ export const TodoItem = ({todo, setCompleted, removeTodo}: Props) => {
         <p>Remaining Time: {remainingTime}</p>
         <p>Created: {formatDateToShow(created)}</p>
         <p>Deadline: {formatDateToShow(deadline)}</p>
-        <p>Completed: {completed ? 'V' : ''}</p>
       </CardContent>
-      <CardFooter className="flex-col gap-2">
-        <Button type="submit" className="w-full" onClick={() => {setCompleted(todo.id)}}>
-          Mask as completed
-        </Button>
-        <Button variant="outline" className="w-full" onClick={() => {removeTodo(todo.id)}}>
-          Remove
-        </Button>
+      <CardFooter className="flex-row justify-center gap-10">
+        {completed
+          ? <div
+            className=" text-green-700 cursor-pointer"
+            onClick={() => { setCompleted(todo.id) }}><CheckLine /></div>
+          : <div
+            className="cursor-pointer"
+            onClick={() => { setCompleted(todo.id) }}><Square /></div>}
       </CardFooter>
     </Card>
   )
