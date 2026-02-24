@@ -11,6 +11,9 @@ import type { Todo } from "@/models/Todo"
 import { formatDateToShow } from "./helpers/formatDeadline"
 import { cn } from "@/lib/utils"
 import { CheckLine, Square, X } from "lucide-react"
+import { useCountDown } from "./hook/useCountdown"
+import { formatMMSS } from "./helpers/formatMMSS"
+import { useState } from "react"
 
 interface Props {
   todo: Todo,
@@ -20,7 +23,9 @@ interface Props {
 
 export const TodoItem = ({ todo, setCompleted, removeTodo }: Props) => {
 
-  const { title, description, remainingTime, created, deadline, completed } = todo
+  const { title, description, created, deadline, completed } = todo
+  
+  const remaining = useCountDown(deadline)
 
   return (
     <Card
@@ -31,7 +36,7 @@ export const TodoItem = ({ todo, setCompleted, removeTodo }: Props) => {
     >
       <CardHeader className="h-full">
 
-        <X className="text-red-500 size-7 top-4 absolute right-7" onClick={() => {removeTodo(todo.id)}} /> 
+        <X className="text-red-500 size-7 cursor-pointer top-4 absolute right-7" onClick={() => {removeTodo(todo.id)}} /> 
         <CardTitle className="pb-2">{title}</CardTitle>
         <CardDescription className={cn({
           'text-green-600': completed
@@ -40,7 +45,7 @@ export const TodoItem = ({ todo, setCompleted, removeTodo }: Props) => {
         </CardDescription>
       </CardHeader>
       <CardContent className="text-xs sm:text-sm">
-        <p>Remaining Time: {remainingTime}</p>
+        <p>Remaining Time: {!completed ? formatMMSS(remaining) : '00'}</p>
         <p>Created: {formatDateToShow(created)}</p>
         <p>Deadline: {formatDateToShow(deadline)}</p>
       </CardContent>
